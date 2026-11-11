@@ -77,3 +77,8 @@
 .home:has([data-for="kiosk"]:is(:hover,:focus)) [data-for="kiosk"] { border-color: var(--home-accent); background: var(--home-accent-soft); }
 
 @media (prefers-reduced-motion: reduce) { .home * { transition: none !important; } }
+
+/* clickable logo in the sidebar (overrides the normal sidebar link look) */
+#sidebar .brand a.brand-link { display: block; padding: 0; margin: 0; background: none; border: 0; line-height: 0; cursor: pointer; border-radius: 8px; }
+#sidebar .brand a.brand-link:hover { background: none; }
+#sidebar .brand a.brand-link:focus-visible { outline: 2px solid var(--home-accent, #2f7dd1); outline-offset: 3px; }
