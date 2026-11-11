@@ -109,7 +109,7 @@ function detectChanges(sites) {
     sites.forEach(function (s) {
         const old = previousStatuses[s.url];
         if (old === undefined || old === s.status) return;
-        const downNow = !isHealthy(s);
+        const downNow = !isHealthy(s.status);
         const wasDown = !isHealthy(old);
         if      (downNow && !wasDown) changes.push({ url: s.url, type: 'down',   status: s.status });
         else if (!downNow && wasDown) changes.push({ url: s.url, type: 'up',     status: s.status });

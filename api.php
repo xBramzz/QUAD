@@ -289,12 +289,10 @@ $urls = array_filter($urls, function($url) {
 });
 $urls = array_values($urls); // Re-index the array
 
-if ($forceReset && !in_array($resetUrl, $urls, true)) {
-    $urls = []; // only re-check known sites (prevents server-side requests to arbitrary hosts)
-} elseif ($forceReset && in_array($resetUrl, $urls)) {
-    $urls = [$resetUrl];
-} elseif ($forceReset) {
-    $urls = [$resetUrl]; 
+if ($forceReset) {
+    // Only allow re-checking a site that's already in the known list.
+    // Prevents SSRF — nobody can make the server fetch arbitrary hosts.
+    $urls = in_array($resetUrl, $urls, true) ? [$resetUrl] : [];
 }
 
 $checkResults = runCurl($urls);
