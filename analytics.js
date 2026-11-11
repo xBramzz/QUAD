@@ -3,7 +3,7 @@
    Sidebar routing + Analytics and Incidents views.
    Uses globals from app.js (allData, renderCards, visibleSites, API_URL, currentUrlKey)
    ========================================================= */
-const VIEWS = ['live', 'analytics', 'incidents'];
+const VIEWS = ['live', 'analytics', 'incidents', 'home'];
 let statsRange = '24h', stats = null, siteQuery = '', animateNext = false;
 
 const esc    = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -25,7 +25,7 @@ function showView() {
     if (name === 'live') {
         // re-measure the marquee now that the grid is visible again
         if (allData.length) { currentUrlKey = null; renderCards(visibleSites()); }
-    } else { animateNext = true; loadStats(); }
+    } else if (name !== 'home') { animateNext = true; loadStats(); }
 }
 
 function updateBadge() {
@@ -112,5 +112,5 @@ window.addEventListener('hashchange', showView);
 document.addEventListener('DOMContentLoaded', () => {
     showView();
     setInterval(updateBadge, 5000);
-    setInterval(() => { if (currentView() !== 'live') loadStats(); }, 60000);
+    setInterval(() => { if (currentView() === 'analytics' || currentView() === 'incidents') loadStats(); }, 60000);
 });

@@ -1,0 +1,79 @@
+/* =========================================================
+   WEBSITE HEALTH - home.css
+   Styles for the About / Home page (#home).
+   Colors inherit from the theme, so Light and Dark both work.
+   Change the highlight color below if you want another accent.
+   ========================================================= */
+.home { --home-accent: #2f7dd1; --home-accent-soft: rgba(47,125,209,.16); --home-line: rgba(128,128,128,.35); }
+.home #home-body { max-width: 58rem; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+.home h2 { margin: 0 0 .5rem; }
+.home h3 { margin: 2.25rem 0 .5rem; }
+.home p  { line-height: 1.55; max-width: 44rem; margin: 0 0 .75rem; }
+.home .lead { font-size: 1.1rem; }
+.home .hint { opacity: .75; font-size: .95rem; }
+
+.home-btn { display: inline-block; padding: .55rem 1.1rem; border-radius: 6px; border: 1px solid currentColor;
+            color: inherit; text-decoration: none; font-weight: 600; transition: background .15s, color .15s, border-color .15s; }
+.home-btn:hover, .home-btn:focus-visible { background: var(--home-accent); border-color: var(--home-accent); color: #fff; outline: none; }
+
+/* clickable logo in the header */
+.logo-link { display: inline-block; line-height: 0; cursor: pointer; border-radius: 8px; }
+.logo-link:focus-visible { outline: 2px solid var(--home-accent, #2f7dd1); outline-offset: 4px; }
+
+/* the mini header */
+.home .mock { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; justify-content: center;
+              padding: 1rem; margin: 0 0 1rem; border: 1px solid var(--home-line); border-radius: 10px; background: rgba(128,128,128,.07); }
+.home .m-part { padding: .35rem .7rem; border-radius: 6px; border: 1px dashed var(--home-line); font-size: .9rem;
+                transition: background .15s, border-color .15s, box-shadow .15s; }
+.home .m-logo { font-weight: 700; font-size: 1.15rem; padding: .45rem 1.2rem; }
+.home .m-dot  { display: inline-block; width: .6rem; height: .6rem; border-radius: 50%; background: #22a559; margin-right: .4rem; }
+
+/* the explanations */
+.home .parts { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: .5rem; }
+.home .parts > div { padding: .7rem .9rem; border: 1px solid var(--home-line); border-radius: 8px;
+                     transition: background .15s, border-color .15s, box-shadow .15s; }
+.home .parts dt { font-weight: 700; margin: 0 0 .2rem; }
+.home .parts dd { margin: 0; line-height: 1.5; opacity: .88; }
+.home .parts > div[tabindex]:focus { outline: none; }
+
+/* colour key */
+.home .key { list-style: none; padding: 0; margin: 0 0 .75rem; display: grid; gap: .4rem; }
+.home .key li { display: flex; align-items: center; gap: .6rem; line-height: 1.4; }
+.home .key i { flex: none; width: .8rem; height: .8rem; border-radius: 50%; }
+.home .k-good { background: #22a559; } .home .k-warn { background: #e8912d; } .home .k-bad { background: #d64545; }
+
+/* highlight rules for hover or keyboard focus (generated per part) */
+.home:has([data-for="filter"]:is(:hover,:focus)) [data-part="filter"],
+.home:has([data-part="filter"]:hover) [data-part="filter"] { border-style: solid; border-color: var(--home-accent); background: var(--home-accent-soft); box-shadow: 0 0 0 3px var(--home-accent-soft); }
+.home:has([data-part="filter"]:hover) [data-for="filter"],
+.home:has([data-for="filter"]:is(:hover,:focus)) [data-for="filter"] { border-color: var(--home-accent); background: var(--home-accent-soft); }
+.home:has([data-for="health"]:is(:hover,:focus)) [data-part="health"],
+.home:has([data-part="health"]:hover) [data-part="health"] { border-style: solid; border-color: var(--home-accent); background: var(--home-accent-soft); box-shadow: 0 0 0 3px var(--home-accent-soft); }
+.home:has([data-part="health"]:hover) [data-for="health"],
+.home:has([data-for="health"]:is(:hover,:focus)) [data-for="health"] { border-color: var(--home-accent); background: var(--home-accent-soft); }
+.home:has([data-for="time"]:is(:hover,:focus)) [data-part="time"],
+.home:has([data-part="time"]:hover) [data-part="time"] { border-style: solid; border-color: var(--home-accent); background: var(--home-accent-soft); box-shadow: 0 0 0 3px var(--home-accent-soft); }
+.home:has([data-part="time"]:hover) [data-for="time"],
+.home:has([data-for="time"]:is(:hover,:focus)) [data-for="time"] { border-color: var(--home-accent); background: var(--home-accent-soft); }
+.home:has([data-for="logo"]:is(:hover,:focus)) [data-part="logo"],
+.home:has([data-part="logo"]:hover) [data-part="logo"] { border-style: solid; border-color: var(--home-accent); background: var(--home-accent-soft); box-shadow: 0 0 0 3px var(--home-accent-soft); }
+.home:has([data-part="logo"]:hover) [data-for="logo"],
+.home:has([data-for="logo"]:is(:hover,:focus)) [data-for="logo"] { border-color: var(--home-accent); background: var(--home-accent-soft); }
+.home:has([data-for="date"]:is(:hover,:focus)) [data-part="date"],
+.home:has([data-part="date"]:hover) [data-part="date"] { border-style: solid; border-color: var(--home-accent); background: var(--home-accent-soft); box-shadow: 0 0 0 3px var(--home-accent-soft); }
+.home:has([data-part="date"]:hover) [data-for="date"],
+.home:has([data-for="date"]:is(:hover,:focus)) [data-for="date"] { border-color: var(--home-accent); background: var(--home-accent-soft); }
+.home:has([data-for="refresh"]:is(:hover,:focus)) [data-part="refresh"],
+.home:has([data-part="refresh"]:hover) [data-part="refresh"] { border-style: solid; border-color: var(--home-accent); background: var(--home-accent-soft); box-shadow: 0 0 0 3px var(--home-accent-soft); }
+.home:has([data-part="refresh"]:hover) [data-for="refresh"],
+.home:has([data-for="refresh"]:is(:hover,:focus)) [data-for="refresh"] { border-color: var(--home-accent); background: var(--home-accent-soft); }
+.home:has([data-for="theme"]:is(:hover,:focus)) [data-part="theme"],
+.home:has([data-part="theme"]:hover) [data-part="theme"] { border-style: solid; border-color: var(--home-accent); background: var(--home-accent-soft); box-shadow: 0 0 0 3px var(--home-accent-soft); }
+.home:has([data-part="theme"]:hover) [data-for="theme"],
+.home:has([data-for="theme"]:is(:hover,:focus)) [data-for="theme"] { border-color: var(--home-accent); background: var(--home-accent-soft); }
+.home:has([data-for="kiosk"]:is(:hover,:focus)) [data-part="kiosk"],
+.home:has([data-part="kiosk"]:hover) [data-part="kiosk"] { border-style: solid; border-color: var(--home-accent); background: var(--home-accent-soft); box-shadow: 0 0 0 3px var(--home-accent-soft); }
+.home:has([data-part="kiosk"]:hover) [data-for="kiosk"],
+.home:has([data-for="kiosk"]:is(:hover,:focus)) [data-for="kiosk"] { border-color: var(--home-accent); background: var(--home-accent-soft); }
+
+@media (prefers-reduced-motion: reduce) { .home * { transition: none !important; } }

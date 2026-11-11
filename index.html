@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Website Health</title>
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="home.css" />
 </head>
 <body>
     <div id="edge" aria-hidden="true"></div>
@@ -33,7 +34,7 @@
             </div>
 
             <div class="dateTime" id="time"></div>
-            <div class="logo"><img src="images/logo.png" alt="Website Health" onerror="this.onerror=null;this.src='images/logo.webp'" /></div>
+            <div class="logo"><a href="#home" class="logo-link" title="About this dashboard" aria-label="About Website Health"><img src="images/logo.png" alt="Website Health" onerror="this.onerror=null;this.src='images/logo.webp'" /></a></div>
             <div class="dateTime" id="date"></div>
 
             <button id="force-refresh-btn" class="icon-btn" title="Refresh now"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg><span class="lbl">Refresh</span></button>
@@ -48,6 +49,56 @@
             <button id="kiosk-btn" class="icon-btn" title="Fullscreen mode"><svg class="ico in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg><span class="lbl in">Fullscreen</span><svg class="ico out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/></svg><span class="lbl out">Exit</span></button>
         </header>
 
+        <section id="view-home" class="view view-scroll home" hidden>
+            <div id="home-body">
+                <h2>Website Health</h2>
+                <p class="lead">This dashboard checks all our websites around the clock and shows which ones are up, which are slow and which are down. Use it on a wall screen to see problems at a glance, or open Analytics to look back at how a site did over the last day, week or month.</p>
+                <a class="home-btn" href="#live">Open the live view</a>
+
+                <h3>The header</h3>
+                <p class="hint">Hover or tab over an explanation to see which part of the header it is. You can also hover the parts in the mini header.</p>
+                <div class="mock" aria-hidden="true">
+                    <span class="m-part" data-part="filter">Show: All</span>
+                    <span class="m-part" data-part="health"><i class="m-dot"></i>98% up</span>
+                    <span class="m-part" data-part="time">14:32</span>
+                    <span class="m-part m-logo" data-part="logo">Logo</span>
+                    <span class="m-part" data-part="date">Wed 11 Nov</span>
+                    <span class="m-part" data-part="refresh">Refresh</span>
+                    <span class="m-part" data-part="theme">Light</span>
+                    <span class="m-part" data-part="kiosk">Fullscreen</span>
+                </div>
+                <dl class="parts">
+                    <div tabindex="0" data-for="filter"><dt>Show filter</dt><dd>Narrows the Live cards to All, Healthy (faster than 1 second), Slow (slower than 1 second) or Down. It only appears on the Live page.</dd></div>
+                    <div tabindex="0" data-for="health"><dt>Health pill</dt><dd>The percentage of sites that are responding right now.</dd></div>
+                    <div tabindex="0" data-for="time"><dt>Time</dt><dd>The current time. Handy when the dashboard runs on a wall screen.</dd></div>
+                    <div tabindex="0" data-for="logo"><dt>Logo</dt><dd>Opens this page from anywhere in the dashboard.</dd></div>
+                    <div tabindex="0" data-for="date"><dt>Date</dt><dd>Today's date.</dd></div>
+                    <div tabindex="0" data-for="refresh"><dt>Refresh</dt><dd>Fetches fresh results right away instead of waiting for the next automatic update.</dd></div>
+                    <div tabindex="0" data-for="theme"><dt>Theme</dt><dd>Switches between a light and a dark look.</dd></div>
+                    <div tabindex="0" data-for="kiosk"><dt>Fullscreen</dt><dd>Fills the whole screen for a wall display. Press Exit to go back.</dd></div>
+                </dl>
+
+                <h3>The pages</h3>
+                <dl class="parts">
+                    <div><dt>Live</dt><dd>Every site as a card with its status, response time and a small graph of recent checks.</dd></div>
+                    <div><dt>Analytics</dt><dd>Uptime, average response time and number of checks for 24 hours, 7 days or 30 days, with a chart and a table of sites, worst first.</dd></div>
+                    <div><dt>Incidents</dt><dd>Every outage with the site, when it started, how long it lasted and whether it is resolved. The red number on the menu item is how many sites are down right now.</dd></div>
+                    <div><dt>Footer</dt><dd>How full the memory and disk of the server running this dashboard are.</dd></div>
+                </dl>
+
+                <h3>Reading the numbers</h3>
+                <p>A site counts as up when it answers with a normal page or a redirect (status 200 to 399). Anything else, including no answer at all, counts as down and starts an incident.</p>
+                <ul class="key">
+                    <li><i class="k-good"></i>Uptime of 99.9% or more is good.</li>
+                    <li><i class="k-warn"></i>Uptime between 99% and 99.9% needs a look.</li>
+                    <li><i class="k-bad"></i>Uptime below 99% is a problem.</li>
+                </ul>
+                <p>Response times in the charts are capped at 5 seconds, so one very slow check does not flatten the rest of the graph.</p>
+
+                <h3>Where the data comes from</h3>
+                <p>The sites come from the Plesk server, and a few internal domains are hidden on purpose. Results are refreshed about once a minute, so many people can watch at the same time without overloading the sites. The small graphs on the Live page cover the last 8 hours. Analytics and Incidents keep 30 days of history. Checks are stored while someone has the Live page open, so leave it running on a screen for the best charts.</p>
+            </div>
+        </section>
         <section id="view-live" class="view"><div id="card-container"></div></section>
         <section id="view-analytics" class="view view-scroll" hidden><div id="an-body"></div></section>
         <section id="view-incidents" class="view view-scroll" hidden><div id="inc-body"></div></section>
