@@ -56,7 +56,7 @@ function initKiosk() {
         else document.documentElement.requestFullscreen();
     });
     document.addEventListener('fullscreenchange', function () {
-        btn.innerHTML = document.fullscreenElement ? '<span class="ico">✕</span><span class="lbl">Exit</span>' : '<span class="ico">⛶</span><span class="lbl">Fullscreen</span>';
+        btn.classList.toggle('is-full', !!document.fullscreenElement);
     });
 }
 

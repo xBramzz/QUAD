@@ -9,7 +9,7 @@ A live dashboard that checks all your websites, shows how fast they respond, kee
 - **Live wall display.** One card per site with status code, response time, a sparkline and a heatmap of the last 24 checks. Sites that are down get a red overlay and a toast message.
 - **Analytics.** Uptime, average response time, number of checks and incidents over 24 hours, 7 days or 30 days, with a response-time chart and a searchable list of sites (worst first).
 - **Incidents.** Every outage with its status code, start time and duration, and whether it is still ongoing. A red badge in the sidebar counts sites that are down right now.
-- **Always fullscreen.** The sidebar stays hidden. Move the cursor to the left edge of the screen and it slides in.
+- **Always fullscreen.** The frosted-glass sidebar stays hidden. Move the cursor to the left edge of the screen and it slides in.
 - **Light and dark theme**, remembered per browser.
 - **Pi friendly.** Plain HTML, CSS and JavaScript with no frameworks. Animations only use transform and opacity, and are switched off when the system asks for reduced motion.
 
