@@ -18,7 +18,6 @@ const MAX_CONNECTIONS      = 30;
 
 header('Pragma: no-cache');
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
 header('Cache-Control: no-store');
 
 /* --- Blocked Domains (these will be completely hidden from the dashboard) ---
