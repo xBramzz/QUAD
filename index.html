@@ -7,8 +7,9 @@
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+    <div id="edge" aria-hidden="true"></div>
     <nav id="sidebar" aria-label="Main">
-        <div class="brand">Qteco</div>
+        <div class="brand"><img src="images/logo.png" alt="Qteco" onerror="this.onerror=null;this.src='images/logo.webp'" /></div>
         <a href="#live" data-view="live"><span class="ico">◉</span><span class="label">Live</span></a>
         <a href="#analytics" data-view="analytics"><span class="ico">▦</span><span class="label">Analytics</span></a>
         <a href="#incidents" data-view="incidents"><span class="ico">△</span><span class="label">Incidents</span><span id="inc-badge" class="badge" hidden></span></a>
@@ -32,10 +33,10 @@
             </div>
 
             <div class="dateTime" id="time"></div>
-            <div class="logo"><img src="images/logo.webp" alt="Website Health" /></div>
+            <div class="logo"><img src="images/logo.png" alt="Website Health" onerror="this.onerror=null;this.src='images/logo.webp'" /></div>
             <div class="dateTime" id="date"></div>
 
-            <button id="force-refresh-btn" class="icon-btn" title="Refresh now">⟳</button>
+            <button id="force-refresh-btn" class="icon-btn" title="Refresh now"><span class="ico">⟳</span><span class="lbl">Refresh</span></button>
 
             <div id="theme-container">
                 <select id="theme-select">
@@ -44,7 +45,7 @@
                 </select>
             </div>
 
-            <button id="kiosk-btn" class="icon-btn" title="Fullscreen mode">⛶</button>
+            <button id="kiosk-btn" class="icon-btn" title="Fullscreen mode"><span class="ico">⛶</span><span class="lbl">Fullscreen</span></button>
         </header>
 
         <section id="view-live" class="view"><div id="card-container"></div></section>

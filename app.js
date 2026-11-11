@@ -56,7 +56,7 @@ function initKiosk() {
         else document.documentElement.requestFullscreen();
     });
     document.addEventListener('fullscreenchange', function () {
-        btn.textContent = document.fullscreenElement ? '✕' : '⛶';
+        btn.innerHTML = document.fullscreenElement ? '<span class="ico">✕</span><span class="lbl">Exit</span>' : '<span class="ico">⛶</span><span class="lbl">Fullscreen</span>';
     });
 }
 
@@ -234,7 +234,7 @@ function renderCards(sites) {
         if (!sites.length) { showError('No Sites Down.'); currentUrlKey = null; return; }
         const grid = document.createElement('div');
         grid.className = 'grid';
-        sites.forEach(s => grid.appendChild(buildCard(s)));
+        sites.forEach((s, i) => { const c = buildCard(s); c.style.setProperty('--i', Math.min(i, 20)); grid.appendChild(c); });
         container.appendChild(grid);
         currentUrlKey = key;
         setupMarquee(container, grid);

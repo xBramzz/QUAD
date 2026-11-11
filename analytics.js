@@ -4,7 +4,7 @@
    Uses globals from app.js (allData, renderCards, visibleSites, API_URL, currentUrlKey)
    ========================================================= */
 const VIEWS = ['live', 'analytics', 'incidents'];
-let statsRange = '24h', stats = null, siteQuery = '';
+let statsRange = '24h', stats = null, siteQuery = '', animateNext = false;
 
 const esc    = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fmtMs  = ms => ms == null ? '–' : ms >= 1000 ? (ms / 1000).toFixed(1) + ' s' : Math.round(ms) + ' ms';
@@ -25,7 +25,7 @@ function showView() {
     if (name === 'live') {
         // re-measure the marquee now that the grid is visible again
         if (allData.length) { currentUrlKey = null; renderCards(visibleSites()); }
-    } else loadStats();
+    } else { animateNext = true; loadStats(); }
 }
 
 function updateBadge() {
@@ -40,8 +40,10 @@ async function loadStats() {
         const res = await fetch(`${API_URL}?action=stats&range=${statsRange}`, { cache: 'no-store' });
         stats = await res.json();
         if (stats.error) throw new Error(stats.error);
+        const box = document.getElementById(currentView() === 'analytics' ? 'an-body' : 'inc-body');
         if (currentView() === 'analytics') renderAnalytics();
         if (currentView() === 'incidents') renderIncidents();
+        if (animateNext) { box.classList.add('anim'); setTimeout(() => box.classList.remove('anim'), 1600); animateNext = false; }
     } catch (e) {
         ['an-body', 'inc-body'].forEach(id =>
             document.getElementById(id).innerHTML = `<div class="error-banner">${esc(e.message)}</div>`);
@@ -55,7 +57,7 @@ function buildBars(tl) {
     const bars = tl.map((b, i) => {
         const h = Math.max(2, (b.avg || 0) / max * H), upp = b.up / b.n * 100;
         const cls = upp < 95 ? 'bar-bad' : upp < 100 ? 'bar-warn' : 'bar-ok';
-        return `<rect class="${cls}" x="${(i * bw + 1).toFixed(1)}" y="${(H - h).toFixed(1)}" width="${Math.max(1, bw - 2).toFixed(1)}" height="${h.toFixed(1)}" rx="2"><title>${fmtAt(b.b)}: ${fmtMs(b.avg)}, ${upp.toFixed(1)}% up</title></rect>`;
+        return `<rect style="--i:${i}" class="${cls}" x="${(i * bw + 1).toFixed(1)}" y="${(H - h).toFixed(1)}" width="${Math.max(1, bw - 2).toFixed(1)}" height="${h.toFixed(1)}" rx="2"><title>${fmtAt(b.b)}: ${fmtMs(b.avg)}, ${upp.toFixed(1)}% up</title></rect>`;
     }).join('');
     return `<svg class="bars" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${bars}</svg>
             <div class="chart-note"><span>${fmtAt(tl[0].b)}</span><span>Tallest bar: ${fmtMs(max)}. Orange or red bars had downtime.</span><span>Now</span></div>`;
@@ -104,9 +106,8 @@ function renderIncidents() {
 /* ---------- WIRING ---------- */
 document.addEventListener('click', e => {
     const b = e.target.closest('[data-range]');
-    if (b) { statsRange = b.dataset.range; loadStats(); }
+    if (b) { statsRange = b.dataset.range; animateNext = true; loadStats(); }
 });
-document.addEventListener('fullscreenchange', () => document.body.classList.toggle('kiosk', !!document.fullscreenElement));
 window.addEventListener('hashchange', showView);
 document.addEventListener('DOMContentLoaded', () => {
     showView();
