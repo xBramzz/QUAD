@@ -3,11 +3,7 @@
    Sidebar routing + Analytics and Incidents views.
    Defensive: works even if app.js fails to load or loads late.
    ========================================================= */
-<<<<<<< Updated upstream
 const VIEWS = ['live', 'analytics', 'incidents', 'home'];
-=======
-const VIEWS = ['live', 'analytics', 'incidents', 'home', 'inventory', 'domains', 'certs', 'dns', 'security', 'server'];
->>>>>>> Stashed changes
 let statsRange = '24h', stats = null, siteQuery = '', animateNext = false;
 
 const esc    = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -41,22 +37,9 @@ function showView() {
     if (filter) filter.style.visibility = name === 'live' ? 'visible' : 'hidden';
 
     if (name === 'live') {
-<<<<<<< Updated upstream
         // re-measure the marquee now that the grid is visible again
         if (allData.length) { currentUrlKey = null; renderCards(visibleSites()); }
     } else if (name !== 'home') { animateNext = true; loadStats(); }
-=======
-        const st = liveState();
-        if (st.hasApp && st.allData.length) {
-            if (typeof currentUrlKey !== 'undefined') currentUrlKey = null;
-            renderCards(visibleSites());
-        }
-    } else if (name === 'analytics' || name === 'incidents') {
-        animateNext = true; loadStats();
-    } else if (typeof window.showTab === 'function') {
-        window.showTab(name);
-    }
->>>>>>> Stashed changes
 }
 
 function updateBadge() {
@@ -154,8 +137,4 @@ document.addEventListener('DOMContentLoaded', () => {
     showView();
     setInterval(updateBadge, 5000);
     setInterval(() => { if (currentView() === 'analytics' || currentView() === 'incidents') loadStats(); }, 60000);
-<<<<<<< Updated upstream
 });
-=======
-});
->>>>>>> Stashed changes
