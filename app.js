@@ -1,5 +1,6 @@
 /* =========================================================
    WEBSITE HEALTH — app.js (Pi-optimised, Historical Data)
+   Complete file — replace the whole thing, do not patch.
    ========================================================= */
 const API_URL      = 'api.php';
 const REFRESH_MS   = 30000;
@@ -8,6 +9,7 @@ const SCROLL_PPS   = 36;    // pixels per second for marquee
 let allData          = [];
 let historyData      = {};
 let previousStatuses = null;
+let currentUrlKey    = null;
 
 document.addEventListener('DOMContentLoaded', function () {
     startClock();
@@ -24,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function startClock() {
     const timeEl = document.getElementById('time');
     const dateEl = document.getElementById('date');
+    if (!timeEl || !dateEl) return;
     function tick() {
         const now = new Date();
         timeEl.textContent = now.toLocaleTimeString('nl-NL');
@@ -38,6 +41,7 @@ function startClock() {
 /* ---------- THEME ---------- */
 function initTheme() {
     const sel = document.getElementById('theme-select');
+    if (!sel) return;
     if (localStorage.getItem('theme') === 'dark') {
         document.body.classList.add('dark-mode');
         sel.value = 'dark';
@@ -51,6 +55,7 @@ function initTheme() {
 /* ---------- KIOSK / FULLSCREEN ---------- */
 function initKiosk() {
     const btn = document.getElementById('kiosk-btn');
+    if (!btn) return;
     btn.addEventListener('click', function () {
         if (document.fullscreenElement) document.exitFullscreen();
         else document.documentElement.requestFullscreen();
@@ -63,18 +68,25 @@ function initKiosk() {
 /* ---------- GLOBAL REFRESH ---------- */
 function initGlobalRefresh() {
     const btn = document.getElementById('force-refresh-btn');
+    if (!btn) return;
     btn.addEventListener('click', function () {
         btn.classList.add('is-spinning');
-        // Note: To truly bypass the 10-min PHP cache for ALL sites, 
-        // you'd need to add ?reset=all logic to api.php. 
-        // For now, this just forces a frontend re-fetch.
-        loadData().finally(() => btn.classList.remove('is-spinning'));
+        // Forces a fresh check of ALL sites, bypassing the 60-second PHP cache.
+        fetch(`${API_URL}?reset=all`, { cache: 'no-store' })
+            .then(r => r.json())
+            .then(data => {
+                if (!data || !Array.isArray(data.sites)) throw new Error('bad payload');
+                applyPayload(data);
+            })
+            .catch(() => loadData())
+            .finally(() => btn.classList.remove('is-spinning'));
     });
 }
 
 /* ---------- FILTER ---------- */
 function visibleSites() {
-    const v = document.getElementById('status-filter').value;
+    const sel = document.getElementById('status-filter');
+    const v = sel ? sel.value : 'all';
     if (v === 'all') return allData;
     return allData.filter(function (s) {
         const isUp = s.status >= 200 && s.status < 400;
@@ -85,8 +97,9 @@ function visibleSites() {
     });
 }
 function initFilter() {
-    document.getElementById('status-filter')
-        .addEventListener('change', function () { renderCards(visibleSites()); });
+    const sel = document.getElementById('status-filter');
+    if (!sel) return;
+    sel.addEventListener('change', function () { renderCards(visibleSites()); });
 }
 
 /* ---------- HEALTH HELPERS ---------- */
@@ -95,11 +108,12 @@ function isHealthy(st) { return st >= 200 && st < 400; }
 function renderHealth(sites) {
     const pill = document.getElementById('health');
     const text = document.getElementById('health-text');
+    if (!pill || !text) return;
     if (!sites.length) { text.textContent = '—'; return; }
-	const healthy = sites.filter(function(s) { return isHealthy(s.status); }).length;
-    const pct     = Math.round((healthy / sites.length) * 100);
+    const healthy = sites.filter(function (s) { return isHealthy(s.status); }).length;
+    const pct = Math.round((healthy / sites.length) * 100);
     text.textContent = pct + '% healthy';
-    pill.className   = 'health-pill ' + (pct >= 95 ? 'good' : pct >= 80 ? 'warn' : 'bad');
+    pill.className = 'health-pill ' + (pct >= 95 ? 'good' : pct >= 80 ? 'warn' : 'bad');
 }
 
 /* ---------- CHANGE DETECTION + TOASTS ---------- */
@@ -122,35 +136,35 @@ function showToast(change) {
     let box = document.getElementById('toasts');
     if (!box) return;
 
-    // 🛑 ANTI-SPAM: Limit to max 3 toasts on screen at once.
-    // If a 4th one comes in, it kicks out the oldest one.
-    while (box.children.length >= 3) {
-        box.removeChild(box.firstChild);
-    }
+    // Anti-spam: max 3 toasts on screen; a 4th kicks out the oldest.
+    while (box.children.length >= 3) box.removeChild(box.firstChild);
 
     const t = document.createElement('div');
     t.className = 'toast toast-' + change.type;
 
-    // Clean, concise text (no big emojis, no redundant info)
     let msg = '';
     if (change.type === 'down') msg = `${change.url} is DOWN`;
     else if (change.type === 'up') msg = `${change.url} recovered`;
     else if (change.type === 'reset') msg = `Refreshed ${change.url}`;
     else msg = `${change.url} status changed`;
 
-    t.innerHTML = `<span class="toast-dot"></span><span class="toast-text">${msg}</span>`;
+    const dot = document.createElement('span');
+    dot.className = 'toast-dot';
+    const txt = document.createElement('span');
+    txt.className = 'toast-text';
+    txt.textContent = msg;
+    t.appendChild(dot); t.appendChild(txt);
     box.appendChild(t);
 
-    // Auto-remove after 3 seconds (faster than before so they don't pile up)
     setTimeout(() => {
         t.classList.add('hide');
-        setTimeout(() => t.remove(), 400); // Wait for fade-out animation
+        setTimeout(() => t.remove(), 400);
     }, 3000);
 }
 
 function applyFlashes(changes) {
     changes.forEach(function (c) {
-        const card = document.querySelector(`.card[data-url="${c.url}"]`);
+        const card = document.querySelector(`.card[data-url="${CSS.escape(c.url)}"]`);
         if (!card) return;
         card.style.transition = 'background 0.3s';
         card.style.background = c.type === 'down' ? 'var(--red)' : 'var(--green)';
@@ -159,31 +173,30 @@ function applyFlashes(changes) {
 }
 
 /* ---------- DATA FETCHING ---------- */
+function applyPayload(data) {
+    allData = data.sites || [];
+    if (data.history && typeof data.history === 'object') historyData = data.history;
+
+    const changes = detectChanges(allData);
+
+    if (data.error && !allData.length) showError(data.error);
+    else renderCards(visibleSites());
+
+    applyFlashes(changes);
+    changes.forEach(showToast);
+
+    previousStatuses = {};
+    allData.forEach(s => previousStatuses[s.url] = s.status);
+
+    renderHealth(allData);
+    renderStats(data.server);
+}
+
 async function loadData() {
     try {
         const res  = await fetch(API_URL, { cache: 'no-store' });
         const data = await res.json();
-
-		allData = data.sites || [];
-        
-        // 🔥 THIS IS THE MISSING PIECE — load history from API
-        if (data.history && typeof data.history === 'object') {
-            historyData = data.history;
-        }
-        
-        const changes = detectChanges(allData);
-
-        if (data.error && !allData.length) showError(data.error);
-        else renderCards(visibleSites());
-
-        applyFlashes(changes);
-        changes.forEach(showToast);
-
-        previousStatuses = {};
-        allData.forEach(s => previousStatuses[s.url] = s.status);
-
-        renderHealth(allData);
-        renderStats(data.server);
+        applyPayload(data);
     } catch (err) {
         console.warn('Refresh skipped:', err.message);
         if (!allData.length) showError('Cannot reach api.php — is the file uploaded?');
@@ -192,21 +205,19 @@ async function loadData() {
 
 /* ---------- MANUAL RESET (Per Site) ---------- */
 async function resetSite(url) {
-    const btn = document.querySelector(`.card[data-url="${url}"] .reset-btn`);
+    const btn = document.querySelector(`.card[data-url="${CSS.escape(url)}"] .reset-btn`);
     if (btn) btn.classList.add('is-spinning');
 
     try {
         const res = await fetch(`${API_URL}?reset=${encodeURIComponent(url)}`, { cache: 'no-store' });
         const data = await res.json();
 
-        // Update local state with the fresh ping
-        const freshSite = data.sites.find(s => s.url === url);
+        const freshSite = (data.sites || []).find(s => s.url === url);
         if (freshSite) {
             const idx = allData.findIndex(s => s.url === url);
             if (idx !== -1) allData[idx] = freshSite;
-            if (data.history[url]) historyData[url] = data.history[url];
-            
-            // Re-render just the cards to update sparklines/heatmaps
+            if (data.history && data.history[url]) historyData[url] = data.history[url];
+
             renderCards(visibleSites());
             showToast({ url, type: 'reset', status: freshSite.status });
         }
@@ -218,20 +229,24 @@ async function resetSite(url) {
 }
 
 function showError(msg) {
-    document.getElementById('card-container').innerHTML =
-        '<div class="error-banner">ℹ️ ' + msg + '</div>';
+    const c = document.getElementById('card-container');
+    if (!c) return;
+    c.innerHTML = '';
+    const div = document.createElement('div');
+    div.className = 'error-banner';
+    div.textContent = 'ℹ️ ' + msg;
+    c.appendChild(div);
 }
 
 /* ---------- RENDERING ---------- */
-let currentUrlKey = null;
-
 function renderCards(sites) {
     const container = document.getElementById('card-container');
+    if (!container) return;
     const key = sites.map(s => s.url).join('|');
 
     if (key !== currentUrlKey) {
         container.innerHTML = '';
-        if (!sites.length) { showError('No Sites Down.'); currentUrlKey = null; return; }
+        if (!sites.length) { showError('No sites match this filter.'); currentUrlKey = null; return; }
         const grid = document.createElement('div');
         grid.className = 'grid';
         sites.forEach((s, i) => { const c = buildCard(s); c.style.setProperty('--i', Math.min(i, 20)); grid.appendChild(c); });
@@ -241,96 +256,72 @@ function renderCards(sites) {
         return;
     }
 
-    // If structure hasn't changed, just update text/numbers to save DOM rendering
-        // If structure hasn't changed, just update text/numbers to save DOM rendering
+    // Structure unchanged: update text/numbers in place to save DOM work.
     if (!sites.length) return;
     sites.forEach(s => {
-        const card = container.querySelector(`.card[data-url="${s.url}"]`);
+        const card = container.querySelector(`.card[data-url="${CSS.escape(s.url)}"]`);
         if (!card) return;
-        
-        // 1. Update background color class
+
         card.className = 'card status-' + Math.floor((s.status || 0) / 100) + 'xx';
-        
-        // 2. Update status badge and ms
+
         const badge = card.querySelector('.status-badge');
         if (badge) {
             badge.textContent = s.status || 'ERR';
-            badge.className = 'status-badge ' + (s.status >= 200 && s.status < 400 ? (s.ms < 1000 ? 'badge-2xx' : 'badge-3xx') : 'badge-err');
+            badge.className = 'status-badge ' + (isHealthy(s.status) ? (s.ms < 1000 ? 'badge-2xx' : 'badge-3xx') : 'badge-err');
         }
         const msEl = card.querySelector('.current-status span:last-child');
         if (msEl) msEl.textContent = s.ms + ' ms';
 
-        // 3. FUTURISTIC OVERLAY LOGIC (Smoothly add/remove)
-        const isDown = s.status === 0 || s.status >= 400;
+        // Down overlay
+        const isDown = !isHealthy(s.status);
         let overlay = card.querySelector('.down-overlay');
-        
+        const errCode = s.status === 0 ? 'TIMEOUT' : s.status;
+        const errMsg = s.status >= 500 ? 'SERVER FAILURE' : (s.status >= 400 ? 'ACCESS DENIED' : 'CONNECTION LOST');
+
         if (isDown && !overlay) {
-            let errCode = s.status === 0 ? 'TIMEOUT' : s.status;
-            let errMsg = 'CONNECTION LOST';
-            if (s.status >= 500) errMsg = 'SERVER FAILURE';
-            else if (s.status >= 400 && s.status < 500) errMsg = 'ACCESS DENIED';
-            
             overlay = document.createElement('div');
             overlay.className = 'down-overlay';
-            overlay.innerHTML = `<div class="error-code">ERR: ${errCode}</div><div class="error-msg">${errMsg}</div>`;
+            overlay.innerHTML = `<div class="error-code"></div><div class="error-msg"></div>`;
             card.prepend(overlay);
-        } else if (!isDown && overlay) {
-            overlay.remove(); // Smoothly disappears
-        } else if (isDown && overlay) {
-            let errCode = s.status === 0 ? 'TIMEOUT' : s.status;
-            let errMsg = 'CONNECTION LOST';
-            if (s.status >= 500) errMsg = 'SERVER FAILURE';
-            else if (s.status >= 400 && s.status < 500) errMsg = 'ACCESS DENIED';
-            const codeEl = overlay.querySelector('.error-code');
-            const msgEl = overlay.querySelector('.error-msg');
-            if (codeEl) codeEl.textContent = `ERR: ${errCode}`;
-            if (msgEl) msgEl.textContent = errMsg;
+        }
+        if (overlay) {
+            if (!isDown) overlay.remove();
+            else {
+                overlay.querySelector('.error-code').textContent = 'ERR: ' + errCode;
+                overlay.querySelector('.error-msg').textContent = errMsg;
+            }
         }
 
-        // 4. SMOOTH CHART UPDATES (The "dots just go" magic)
-        const entries = historyData[s.url] || [];
-        
-        // Update Heatmap in-place (colors will smoothly fade via CSS)
+        // Heatmap in place
+        const entries = (historyData[s.url] || []).slice(-24);
         const heatCells = card.querySelectorAll('.heat-cell');
         const offset = 24 - entries.length;
         heatCells.forEach((cell, i) => {
-            if (i < offset) {
-                cell.className = 'heat-cell';
-                cell.title = '';
-            } else {
-                const e = entries[i - offset];
-                let cls = 'heat-down';
-                if (e.s >= 200 && e.s < 400) {
-                    if (e.ms < 500) cls = 'heat-fast';
-                    else if (e.ms < 1500) cls = 'heat-med';
-                    else cls = 'heat-slow';
-                }
-                if (!cell.classList.contains(cls)) cell.className = 'heat-cell ' + cls;
-                cell.title = `${e.s} - ${e.ms}ms`;
-            }
+            if (i < offset) { cell.className = 'heat-cell'; cell.title = ''; return; }
+            const e = entries[i - offset];
+            let cls = 'heat-down';
+            if (e.s >= 200 && e.s < 400) cls = e.ms < 500 ? 'heat-fast' : e.ms < 1500 ? 'heat-med' : 'heat-slow';
+            if (!cell.classList.contains(cls)) cell.className = 'heat-cell ' + cls;
+            cell.title = `${e.s} - ${e.ms}ms`;
         });
 
-        // Update Sparkline path in-place
-        const path = card.querySelector('.sparkline path');
-        if (path && entries.length >= 2) {
-            const data = entries.slice(-24);
-            const maxMs = Math.max(...data.map(e => e.ms), 500);
-            const w = 100, h = 30;
-            const step = w / (data.length - 1);
-            let d = '';
-            data.forEach((e, i) => {
-                const x = i * step;
-                const y = h - (e.ms / maxMs) * h;
-                d += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
-            });
-            path.setAttribute('d', d);
+        // Sparkline in place
+        const svg = card.querySelector('.sparkline');
+        if (svg && entries.length >= 2) {
+            let path = svg.querySelector('path');
+            if (!path) {
+                svg.setAttribute('viewBox', '0 0 100 30');
+                svg.setAttribute('preserveAspectRatio', 'none');
+                path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                svg.appendChild(path);
+            }
+            path.setAttribute('d', sparkPath(entries));
         }
-        
-        // Add a subtle "ping" glow to the chart area to show it just updated
+
         const chartArea = card.querySelector('.chart-area');
         if (chartArea) {
             chartArea.classList.remove('chart-updated');
-            void chartArea.offsetWidth; // Trigger reflow to restart animation
+            void chartArea.offsetWidth;
             chartArea.classList.add('chart-updated');
         }
     });
@@ -344,32 +335,22 @@ function buildCard(s) {
     card.rel = 'noopener';
     card.dataset.url = s.url;
 
-    const statusClass = s.status >= 200 && s.status < 400 ? (s.ms < 1000 ? 'badge-2xx' : 'badge-3xx') : 'badge-err';
-    const fallbackImg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><circle cx='12' cy='12' r='11' fill='rgba(140,140,160,0.25)'/><text x='12' y='17' font-size='11' text-anchor='middle'>🌐</text></svg>";
+    const statusClass = isHealthy(s.status) ? (s.ms < 1000 ? 'badge-2xx' : 'badge-3xx') : 'badge-err';
+    const fallbackImg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><circle cx='12' cy='12' r='11' fill='rgba(140,140,160,0.25)'/></svg>";
 
-    // --- FUTURISTIC OVERLAY LOGIC ---
     let overlayHTML = '';
-    const isDown = s.status === 0 || s.status >= 400;
-    if (isDown) {
-        let errCode = s.status === 0 ? 'TIMEOUT' : s.status;
-        let errMsg = 'CONNECTION LOST';
-        if (s.status >= 500) errMsg = 'SERVER FAILURE';
-        else if (s.status >= 400 && s.status < 500) errMsg = 'ACCESS DENIED';
-        
-        overlayHTML = `
-            <div class="down-overlay">
-                <div class="error-code">ERR: ${errCode}</div>
-                <div class="error-msg">${errMsg}</div>
-            </div>
-        `;
+    if (!isHealthy(s.status)) {
+        const errCode = s.status === 0 ? 'TIMEOUT' : s.status;
+        const errMsg = s.status >= 500 ? 'SERVER FAILURE' : (s.status >= 400 ? 'ACCESS DENIED' : 'CONNECTION LOST');
+        overlayHTML = `<div class="down-overlay"><div class="error-code">ERR: ${errCode}</div><div class="error-msg">${errMsg}</div></div>`;
     }
 
     card.innerHTML = `
         ${overlayHTML}
         <button class="reset-btn" title="Force re-check & update history">↻</button>
         <div class="card-header">
-            <img class="favicon" loading="lazy" decoding="async" src="https://icons.duckduckgo.com/ip3/${s.url}.ico" onerror="this.onerror=null; this.src='${fallbackImg}'" alt="">
-            <p class="url">${s.url}</p>
+            <img class="favicon" loading="lazy" decoding="async" src="https://icons.duckduckgo.com/ip3/${encodeURIComponent(s.url)}.ico" onerror="this.onerror=null; this.src='${fallbackImg}'" alt="">
+            <p class="url"></p>
         </div>
         <div class="current-status">
             <span class="status-badge ${statusClass}">${s.status || 'ERR'}</span>
@@ -380,8 +361,8 @@ function buildCard(s) {
             ${buildHeatmap(historyData[s.url] || [])}
         </div>
     `;
+    card.querySelector('.url').textContent = s.url;
 
-    // Prevent the <a> tag from navigating when clicking the reset button
     card.querySelector('.reset-btn').addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -391,55 +372,46 @@ function buildCard(s) {
     return card;
 }
 
-/* ---------- CHART MATH (Lightweight SVG & CSS) ---------- */
-function buildSparkline(entries) {
-    if (!entries || entries.length < 2) return '<svg class="sparkline"></svg>';
-    
-    // Take last 24 entries
-    const data = entries.slice(-24);
-    const maxMs = Math.max(...data.map(e => e.ms), 500); // Min 500ms scale so tiny changes show
-    
+/* ---------- CHART MATH ---------- */
+function sparkPath(data) {
+    const maxMs = Math.max(...data.map(e => e.ms), 500);
     const w = 100, h = 30;
     const step = w / (data.length - 1);
     let d = '';
-    
     data.forEach((e, i) => {
         const x = i * step;
         const y = h - (e.ms / maxMs) * h;
         d += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
     });
+    return d;
+}
 
-    return `<svg class="sparkline" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><path d="${d}"/></svg>`;
+function buildSparkline(entries) {
+    const data = (entries || []).slice(-24);
+    if (data.length < 2) return '<svg class="sparkline" viewBox="0 0 100 30" preserveAspectRatio="none"></svg>';
+    return `<svg class="sparkline" viewBox="0 0 100 30" preserveAspectRatio="none"><path d="${sparkPath(data)}"/></svg>`;
 }
 
 function buildHeatmap(entries) {
-    const data = entries ? entries.slice(-24) : [];
+    const data = (entries || []).slice(-24);
     let cells = '';
     const offset = 24 - data.length;
-    
     for (let i = 0; i < 24; i++) {
-        if (i < offset) {
-            cells += '<div class="heat-cell"></div>'; // Empty past cell
-        } else {
-            const e = data[i - offset];
-            let cls = 'heat-down';
-            if (e.s >= 200 && e.s < 400) {
-                if (e.ms < 500) cls = 'heat-fast';
-                else if (e.ms < 1500) cls = 'heat-med';
-                else cls = 'heat-slow';
-            }
-            cells += `<div class="heat-cell ${cls}" title="${e.s} - ${e.ms}ms"></div>`;
-        }
+        if (i < offset) { cells += '<div class="heat-cell"></div>'; continue; }
+        const e = data[i - offset];
+        let cls = 'heat-down';
+        if (e.s >= 200 && e.s < 400) cls = e.ms < 500 ? 'heat-fast' : e.ms < 1500 ? 'heat-med' : 'heat-slow';
+        cells += `<div class="heat-cell ${cls}" title="${e.s} - ${e.ms}ms"></div>`;
     }
     return `<div class="heatmap">${cells}</div>`;
 }
 
-/* ---------- SERVER STATS ---------- */
 /* ---------- SERVER STATS + COUNTDOWN ---------- */
 let nextRefresh = Date.now() + REFRESH_MS;
 
 function renderStats(server) {
     const footer = document.getElementById('server-stats');
+    if (!footer) return;
     function cls(p) { return p >= 90 ? 'red' : p >= 80 ? 'orange' : 'green'; }
     function bar(label, d, klass) {
         if (!d) return '<div class="' + klass + ' na"><p>' + label + ':</p><p>n/a</p></div>';
@@ -459,7 +431,6 @@ function renderStats(server) {
     nextRefresh = Date.now() + REFRESH_MS;
 }
 
-/* Countdown ticker — updates every second, no API calls */
 function tickCountdown() {
     const el = document.getElementById('countdown');
     if (!el) return;
@@ -483,22 +454,18 @@ function setupMarquee(container, grid) {
 
 function initScrollPause() {
     const c = document.getElementById('card-container');
-    
+    if (!c) return;
+
     function pauseAndScroll() {
-        // 1. Pause the CSS marquee animation
         c.classList.add('scroll-paused');
-        // 2. Unlock native scrolling!
-        c.style.overflowY = 'auto'; 
-        
-        // 3. Reset the timer: if no interaction for 4 seconds, resume auto-scroll
+        c.style.overflowY = 'auto';
         clearTimeout(c._t);
         c._t = setTimeout(() => {
             c.classList.remove('scroll-paused');
-            c.style.overflowY = 'hidden'; // Lock it back to marquee mode
-        }, 4000); 
+            c.style.overflowY = 'hidden';
+        }, 4000);
     }
 
-    // Trigger on any interaction
     c.addEventListener('mouseenter', pauseAndScroll);
     c.addEventListener('wheel', pauseAndScroll, { passive: true });
     c.addEventListener('touchstart', pauseAndScroll, { passive: true });

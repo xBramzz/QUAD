@@ -1,9 +1,13 @@
 /* =========================================================
    WEBSITE HEALTH — analytics.js
    Sidebar routing + Analytics and Incidents views.
-   Uses globals from app.js (allData, renderCards, visibleSites, API_URL, currentUrlKey)
+   Defensive: works even if app.js fails to load or loads late.
    ========================================================= */
+<<<<<<< Updated upstream
 const VIEWS = ['live', 'analytics', 'incidents', 'home'];
+=======
+const VIEWS = ['live', 'analytics', 'incidents', 'home', 'inventory', 'domains', 'certs', 'dns', 'security', 'server'];
+>>>>>>> Stashed changes
 let statsRange = '24h', stats = null, siteQuery = '', animateNext = false;
 
 const esc    = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -14,39 +18,69 @@ const uCls   = p => p >= 99.9 ? 'good' : p >= 99 ? 'warn' : 'bad';
 const rangeSeg = () => '<div class="seg">' + ['24h', '7d', '30d'].map(r =>
     `<button data-range="${r}" class="${r === statsRange ? 'on' : ''}">${r}</button>`).join('') + '</div>';
 
-/* ---------- ROUTING (#live, #analytics, #incidents) ---------- */
+/* ---------- SAFE BRIDGE TO app.js ----------
+   If app.js parsed fine, typeof finds its global bindings; if it failed
+   to load, we fall back instead of throwing ReferenceError.
+   This is what fixes "allData is not defined". */
+function liveState() {
+    return {
+        apiUrl:  (typeof API_URL !== 'undefined') ? API_URL : 'api.php',
+        allData: (typeof allData !== 'undefined' && Array.isArray(allData)) ? allData : [],
+        hasApp:  (typeof renderCards === 'function' && typeof visibleSites === 'function')
+    };
+}
+
+/* ---------- ROUTING ---------- */
 function currentView() { const h = location.hash.slice(1); return VIEWS.includes(h) ? h : 'live'; }
 
 function showView() {
     const name = currentView();
-    VIEWS.forEach(v => { document.getElementById('view-' + v).hidden = v !== name; });
+    VIEWS.forEach(v => { const el = document.getElementById('view-' + v); if (el) el.hidden = v !== name; });
     document.querySelectorAll('#sidebar a').forEach(a => a.classList.toggle('active', a.dataset.view === name));
-    document.getElementById('filter').style.visibility = name === 'live' ? 'visible' : 'hidden';
+    const filter = document.getElementById('filter');
+    if (filter) filter.style.visibility = name === 'live' ? 'visible' : 'hidden';
+
     if (name === 'live') {
+<<<<<<< Updated upstream
         // re-measure the marquee now that the grid is visible again
         if (allData.length) { currentUrlKey = null; renderCards(visibleSites()); }
     } else if (name !== 'home') { animateNext = true; loadStats(); }
+=======
+        const st = liveState();
+        if (st.hasApp && st.allData.length) {
+            if (typeof currentUrlKey !== 'undefined') currentUrlKey = null;
+            renderCards(visibleSites());
+        }
+    } else if (name === 'analytics' || name === 'incidents') {
+        animateNext = true; loadStats();
+    } else if (typeof window.showTab === 'function') {
+        window.showTab(name);
+    }
+>>>>>>> Stashed changes
 }
 
 function updateBadge() {
-    const n = allData.filter(s => !(s.status >= 200 && s.status < 400)).length;
     const b = document.getElementById('inc-badge');
+    if (!b) return;
+    const n = liveState().allData.filter(s => !(s.status >= 200 && s.status < 400)).length;
     b.textContent = n; b.hidden = !n;
 }
 
 /* ---------- DATA ---------- */
 async function loadStats() {
     try {
-        const res = await fetch(`${API_URL}?action=stats&range=${statsRange}`, { cache: 'no-store' });
+        const res = await fetch(`${liveState().apiUrl}?action=stats&range=${statsRange}`, { cache: 'no-store' });
         stats = await res.json();
         if (stats.error) throw new Error(stats.error);
         const box = document.getElementById(currentView() === 'analytics' ? 'an-body' : 'inc-body');
         if (currentView() === 'analytics') renderAnalytics();
         if (currentView() === 'incidents') renderIncidents();
-        if (animateNext) { box.classList.add('anim'); setTimeout(() => box.classList.remove('anim'), 1600); animateNext = false; }
+        if (animateNext && box) { box.classList.add('anim'); setTimeout(() => box.classList.remove('anim'), 1600); animateNext = false; }
     } catch (e) {
-        ['an-body', 'inc-body'].forEach(id =>
-            document.getElementById(id).innerHTML = `<div class="error-banner">${esc(e.message)}</div>`);
+        ['an-body', 'inc-body'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = `<div class="error-banner">${esc(e.message)}</div>`;
+        });
     }
 }
 
@@ -66,7 +100,9 @@ function buildBars(tl) {
 function renderAnalytics() {
     const s = stats.summary, pct = s.checks ? (s.up || 0) / s.checks * 100 : null;
     const tile = (label, val, cls = '') => `<div class="tile ${cls}"><b>${val}</b><span>${label}</span></div>`;
-    document.getElementById('an-body').innerHTML = `
+    const body = document.getElementById('an-body');
+    if (!body) return;
+    body.innerHTML = `
         <div class="view-head"><h2>Analytics</h2>${rangeSeg()}</div>
         <div class="tiles">
             ${tile('Uptime', pct == null ? '–' : pct.toFixed(2) + '%', pct == null ? '' : uCls(pct))}
@@ -79,24 +115,29 @@ function renderAnalytics() {
             <div class="view-head"><h3>Sites, worst first</h3><input class="search" id="site-search" placeholder="Search sites" value="${esc(siteQuery)}"></div>
             <table class="data"><thead><tr><th>Site</th><th>Uptime</th><th class="num">Average</th><th class="num">Slowest</th><th class="num">Checks</th></tr></thead><tbody id="site-rows"></tbody></table>
         </div>`;
-    document.getElementById('site-search').addEventListener('input', e => { siteQuery = e.target.value.toLowerCase(); renderSiteRows(); });
+    const search = document.getElementById('site-search');
+    if (search) search.addEventListener('input', e => { siteQuery = e.target.value.toLowerCase(); renderSiteRows(); });
     renderSiteRows();
 }
 
 function renderSiteRows() {
+    const el = document.getElementById('site-rows');
+    if (!el || !stats) return;
     const rows = stats.sites.filter(x => x.url.toLowerCase().includes(siteQuery))
         .sort((a, b) => a.uptime - b.uptime || b.avg - a.avg)
         .map(x => `<tr><td>${esc(x.url)}</td><td><span class="ubar ${uCls(x.uptime)}"><i style="width:${x.uptime}%"></i></span>${x.uptime}%</td><td class="num">${fmtMs(x.avg)}</td><td class="num">${fmtMs(x.max)}</td><td class="num">${x.checks}</td></tr>`)
         .join('');
-    document.getElementById('site-rows').innerHTML = rows || '<tr><td colspan="5" class="muted">No sites match.</td></tr>';
+    el.innerHTML = rows || '<tr><td colspan="5" class="muted">No sites match.</td></tr>';
 }
 
 /* ---------- INCIDENTS ---------- */
 function renderIncidents() {
     const now = Date.now() / 1000;
+    const body = document.getElementById('inc-body');
+    if (!body) return;
     const rows = stats.incidents.map(i =>
         `<tr><td>${esc(i.url)}</td><td><span class="status-badge badge-err">${i.status || 'Timeout'}</span></td><td>${fmtAt(i.started)}</td><td>${fmtDur((i.ended || now) - i.started)}</td><td>${i.ended ? 'Resolved' : '<b class="ongoing">Ongoing</b>'}</td></tr>`).join('');
-    document.getElementById('inc-body').innerHTML = `
+    body.innerHTML = `
         <div class="view-head"><h2>Incidents</h2>${rangeSeg()}</div>
         <div class="panel">${rows
             ? `<table class="data"><thead><tr><th>Site</th><th>Status</th><th>Started</th><th>Duration</th><th>State</th></tr></thead><tbody>${rows}</tbody></table>`
@@ -113,4 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
     showView();
     setInterval(updateBadge, 5000);
     setInterval(() => { if (currentView() === 'analytics' || currentView() === 'incidents') loadStats(); }, 60000);
+<<<<<<< Updated upstream
 });
+=======
+});
+>>>>>>> Stashed changes
