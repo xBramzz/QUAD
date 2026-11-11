@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Website Health</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <nav id="sidebar" aria-label="Main">
+        <div class="brand">Qteco</div>
+        <a href="#live" data-view="live"><span class="ico">◉</span><span class="label">Live</span></a>
+        <a href="#analytics" data-view="analytics"><span class="ico">▦</span><span class="label">Analytics</span></a>
+        <a href="#incidents" data-view="incidents"><span class="ico">△</span><span class="label">Incidents</span><span id="inc-badge" class="badge" hidden></span></a>
+    </nav>
+
+    <div class="main">
+        <header class="Qteco">
+            <div id="filter">
+                <label for="status-filter">Show:</label>
+                <select id="status-filter">
+                    <option value="all">All</option>
+                    <option value="healthy">Healthy (&lt; 1s)</option>
+                    <option value="slow">Slow (&gt; 1s)</option>
+                    <option value="down">Down</option>
+                </select>
+            </div>
+
+            <div id="health" class="health-pill" title="Percentage of sites responding">
+                <span id="health-dot"></span>
+                <span id="health-text">—</span>
+            </div>
+
+            <div class="dateTime" id="time"></div>
+            <div class="logo"><img src="images/logo.webp" alt="Website Health" /></div>
+            <div class="dateTime" id="date"></div>
+
+            <button id="force-refresh-btn" class="icon-btn" title="Refresh now">⟳</button>
+
+            <div id="theme-container">
+                <select id="theme-select">
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                </select>
+            </div>
+
+            <button id="kiosk-btn" class="icon-btn" title="Fullscreen mode">⛶</button>
+        </header>
+
+        <section id="view-live" class="view"><div id="card-container"></div></section>
+        <section id="view-analytics" class="view view-scroll" hidden><div id="an-body"></div></section>
+        <section id="view-incidents" class="view view-scroll" hidden><div id="inc-body"></div></section>
+
+        <footer id="server-stats"></footer>
+        <div id="toasts"></div>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="analytics.js"></script>
+</body>
+</html>
