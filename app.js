@@ -190,6 +190,9 @@ function applyPayload(data) {
 
     renderHealth(allData);
     renderStats(data.server);
+
+    // Let other scripts (analytics.js, tabs.js) react to fresh data.
+    if (typeof onSitesUpdated === 'function') onSitesUpdated(allData);
 }
 
 async function loadData() {
