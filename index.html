@@ -6,10 +6,7 @@
     <title>Website Health</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="home.css" />
-<<<<<<< Updated upstream
-=======
     <link rel="stylesheet" href="tabs.css" />
->>>>>>> Stashed changes
 </head>
 <body>
     <div id="edge" aria-hidden="true"></div>
@@ -66,7 +63,6 @@
                 <p class="lead">This dashboard checks all our websites around the clock and shows which ones are up, which are slow and which are down. Use it on a wall screen to see problems at a glance, or open Analytics to look back at how a site did over the last day, week or month.</p>
                 <a class="home-btn" href="#live">Open the live view</a>
 
-<<<<<<< Updated upstream
                 <h3>The header</h3>
                 <p class="hint">Hover or tab over an explanation to see which part of the header it is. You can also hover the parts in the mini header.</p>
                 <div class="mock" aria-hidden="true">
@@ -93,22 +89,14 @@
                 <h3>The pages</h3>
                 <dl class="parts">
                     <div><dt>Live</dt><dd>Every site as a card with its status, response time and a small graph of recent checks.</dd></div>
-                    <div><dt>Analytics</dt><dd>Uptime, average response time and number of checks for 24 hours, 7 days or 30 days, with a chart and a table of sites, worst first.</dd></div>
-                    <div><dt>Incidents</dt><dd>Every outage with the site, when it started, how long it lasted and whether it is resolved. The red number on the menu item is how many sites are down right now.</dd></div>
-                    <div><dt>Footer</dt><dd>How full the memory and disk of the server running this dashboard are.</dd></div>
-=======
-                <h3>The pages</h3>
-                <dl class="parts">
-                    <div><dt>Live</dt><dd>Every site as a card with its status, response time and a small graph of recent checks.</dd></div>
                     <div><dt>Inventory</dt><dd>The full catalogue of hosted sites: IP address, web server, page title, detected technology, redirects and size. Search, sort and export to CSV.</dd></div>
                     <div><dt>Domains</dt><dd>Sites grouped by their root domain, with a breakdown of extensions and subdomains.</dd></div>
                     <div><dt>Certificates</dt><dd>TLS certificates per site: who issued them, when they expire and how many days are left. Expiring certificates get a red number on the menu item.</dd></div>
                     <div><dt>DNS</dt><dd>The DNS records behind every site: addresses, mail servers, name servers and text records.</dd></div>
                     <div><dt>Security</dt><dd>A report card per site for security headers like HSTS, CSP and clickjacking protection.</dd></div>
-                    <div><dt>Analytics</dt><dd>Uptime, average response time and number of checks for 24 hours, 7 days or 30 days.</dd></div>
-                    <div><dt>Incidents</dt><dd>Every outage with the site, when it started, how long it lasted and whether it is resolved.</dd></div>
+                    <div><dt>Analytics</dt><dd>Uptime, average response time and number of checks for 24 hours, 7 days or 30 days, with a chart and a table of sites, worst first.</dd></div>
+                    <div><dt>Incidents</dt><dd>Every outage with the site, when it started, how long it lasted and whether it is resolved. The red number on the menu item is how many sites are down right now.</dd></div>
                     <div><dt>Server</dt><dd>Health of the machine running this dashboard: memory, disk, load, uptime and the check engine itself.</dd></div>
->>>>>>> Stashed changes
                 </dl>
 
                 <h3>Reading the numbers</h3>
@@ -118,14 +106,10 @@
                     <li><i class="k-warn"></i>Uptime between 99% and 99.9% needs a look.</li>
                     <li><i class="k-bad"></i>Uptime below 99% is a problem.</li>
                 </ul>
-<<<<<<< Updated upstream
                 <p>Response times in the charts are capped at 5 seconds, so one very slow check does not flatten the rest of the graph.</p>
 
                 <h3>Where the data comes from</h3>
-                <p>The sites come from the Plesk server, and a few internal domains are hidden on purpose. Results are refreshed about once a minute, so many people can watch at the same time without overloading the sites. The small graphs on the Live page cover the last 8 hours. Analytics and Incidents keep 30 days of history. Checks are stored while someone has the Live page open, so leave it running on a screen for the best charts.</p>
-=======
-                <p>Response times in the charts are capped at 5 seconds. Deep information (certificates, DNS, headers) is refreshed in small batches every few hours so the monitored sites are never overloaded — use the Rescan button on those pages to push the queue.</p>
->>>>>>> Stashed changes
+                <p>The sites come from the Plesk server, and a few internal domains are hidden on purpose. Results are refreshed about once a minute, so many people can watch at the same time without overloading the sites. The small graphs on the Live page cover the last 8 hours. Analytics and Incidents keep 30 days of history. Checks are stored while someone has the Live page open, so leave it running on a screen for the best charts. Deep information (certificates, DNS, headers) is refreshed in small batches every few hours — use the Rescan button on those pages to push the queue.</p>
             </div>
         </section>
         <section id="view-live" class="view"><div id="card-container"></div></section>

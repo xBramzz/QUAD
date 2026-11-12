@@ -3,7 +3,9 @@
    Sidebar routing + Analytics and Incidents views.
    Defensive: works even if app.js fails to load or loads late.
    ========================================================= */
-const VIEWS = ['live', 'analytics', 'incidents', 'home'];
+const VIEWS = ['live', 'inventory', 'domains', 'certs', 'dns', 'security', 'analytics', 'incidents', 'server', 'home'];
+// Views rendered by tabs.js; analytics.js only handles analytics & incidents.
+const TAB_VIEWS = ['inventory', 'domains', 'certs', 'dns', 'security', 'server'];
 let statsRange = '24h', stats = null, siteQuery = '', animateNext = false;
 
 const esc    = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -38,8 +40,18 @@ function showView() {
 
     if (name === 'live') {
         // re-measure the marquee now that the grid is visible again
-        if (allData.length) { currentUrlKey = null; renderCards(visibleSites()); }
+        if (typeof allData !== 'undefined' && typeof renderCards === 'function' && typeof visibleSites === 'function' && allData.length) {
+            currentUrlKey = null; renderCards(visibleSites());
+        }
+    } else if (TAB_VIEWS.includes(name)) {
+        // handled by tabs.js
     } else if (name !== 'home') { animateNext = true; loadStats(); }
+}
+
+/* Called from app.js after every successful data load (if app.js loaded). */
+function onSitesUpdated(sites) {
+    updateBadge();
+    if (typeof window.onLiveSites === 'function') window.onLiveSites(sites);
 }
 
 function updateBadge() {
