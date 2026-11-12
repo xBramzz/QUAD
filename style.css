@@ -735,3 +735,16 @@ body:not(.dark-mode) #sidebar { background: rgba(16,18,30,0.84); }
   .view, .card, .anim .tile, .anim .panel, .anim .bars rect, .anim .ubar i, #force-refresh-btn.is-spinning .ico { animation: none !important; }
   #sidebar, #sidebar a, .icon-btn { transition-duration: 0.01ms !important; transition-delay: 0s !important; }
 }
+/* ============ LOGOUT (sidebar) ============ */
+.logout-form { margin: auto 0 0; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); }
+.logout-btn {
+  width: 100%; display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px; border: 0; border-radius: 12px;
+  background: transparent; color: #b4b7d0; cursor: pointer;
+  font: 600 0.9rem var(--font-family); text-align: left;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+.logout-btn:hover { background: rgba(239,68,68,0.14); color: #fca5a5; transform: translateX(3px); }
+.logout-btn:active { transform: scale(0.97); }
+.logout-btn:focus-visible { outline: 2px solid #f87171; outline-offset: 2px; box-shadow: none; }
+@media (prefers-reduced-motion: reduce) { .logout-btn { transition-duration: 0.01ms; } }

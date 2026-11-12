@@ -11,3 +11,6 @@ health.sqlite-journal
 Thumbs.db
 .vscode/
 .idea/
+config.php
+data/
+*.json

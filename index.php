@@ -1,3 +1,5 @@
+<?php require __DIR__ . '/auth.php'; require_login(); ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +13,7 @@
 <body>
     <div id="edge" aria-hidden="true"></div>
     <nav id="sidebar" aria-label="Main">
-        <div class="brand"><a href="#home" class="brand-link" title="About this dashboard" aria-label="About Website Health"><img src="images/logo.png" alt="Qteco" onerror="this.onerror=null;this.src='images/logo.webp'" /></a></div>
+        <div class="brand"><img src="images/logo.png" alt="Qteco" onerror="this.onerror=null;this.src='images/logo.webp'" /></div>
         <a href="#live" data-view="live"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span class="label">Live</span></a>
         <a href="#inventory" data-view="inventory"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="label">Inventory</span></a>
         <a href="#domains" data-view="domains"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span class="label">Domains</span></a>
@@ -22,6 +24,18 @@
         <a href="#incidents" data-view="incidents"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><span class="label">Incidents</span><span id="inc-badge" class="badge" hidden></span></a>
         <a href="#server" data-view="server"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><path d="M6 6h.01"/><path d="M6 18h.01"/></svg><span class="label">Server</span></a>
         <a href="#home" data-view="home"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><span class="label">About</span></a>
+       <form method="post" action="logout.php">
+         <form class="logout-form" method="post" action="logout.php">
+  <input type="hidden" name="csrf" value="<?= htmlspecialchars(csrf_token()) ?>">
+  <button type="submit" class="logout-btn">
+    <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+      <path d="m16 17 5-5-5-5"/>
+      <path d="M21 12H9"/>
+    </svg>
+    <span>Logout</span>
+  </button>
+</form>
     </nav>
 
     <div class="main">
@@ -63,29 +77,6 @@
                 <p class="lead">This dashboard checks all our websites around the clock and shows which ones are up, which are slow and which are down. Use it on a wall screen to see problems at a glance, or open Analytics to look back at how a site did over the last day, week or month.</p>
                 <a class="home-btn" href="#live">Open the live view</a>
 
-                <h3>The header</h3>
-                <p class="hint">Hover or tab over an explanation to see which part of the header it is. You can also hover the parts in the mini header.</p>
-                <div class="mock" aria-hidden="true">
-                    <span class="m-part" data-part="filter">Show: All</span>
-                    <span class="m-part" data-part="health"><i class="m-dot"></i>98% up</span>
-                    <span class="m-part" data-part="time">14:32</span>
-                    <span class="m-part m-logo" data-part="logo">Logo</span>
-                    <span class="m-part" data-part="date">Wed 11 Nov</span>
-                    <span class="m-part" data-part="refresh">Refresh</span>
-                    <span class="m-part" data-part="theme">Light</span>
-                    <span class="m-part" data-part="kiosk">Fullscreen</span>
-                </div>
-                <dl class="parts">
-                    <div tabindex="0" data-for="filter"><dt>Show filter</dt><dd>Narrows the Live cards to All, Healthy (faster than 1 second), Slow (slower than 1 second) or Down. It only appears on the Live page.</dd></div>
-                    <div tabindex="0" data-for="health"><dt>Health pill</dt><dd>The percentage of sites that are responding right now.</dd></div>
-                    <div tabindex="0" data-for="time"><dt>Time</dt><dd>The current time. Handy when the dashboard runs on a wall screen.</dd></div>
-                    <div tabindex="0" data-for="logo"><dt>Logo</dt><dd>Opens this page from anywhere in the dashboard.</dd></div>
-                    <div tabindex="0" data-for="date"><dt>Date</dt><dd>Today's date.</dd></div>
-                    <div tabindex="0" data-for="refresh"><dt>Refresh</dt><dd>Fetches fresh results right away instead of waiting for the next automatic update.</dd></div>
-                    <div tabindex="0" data-for="theme"><dt>Theme</dt><dd>Switches between a light and a dark look.</dd></div>
-                    <div tabindex="0" data-for="kiosk"><dt>Fullscreen</dt><dd>Fills the whole screen for a wall display. Press Exit to go back.</dd></div>
-                </dl>
-
                 <h3>The pages</h3>
                 <dl class="parts">
                     <div><dt>Live</dt><dd>Every site as a card with its status, response time and a small graph of recent checks.</dd></div>
@@ -94,8 +85,8 @@
                     <div><dt>Certificates</dt><dd>TLS certificates per site: who issued them, when they expire and how many days are left. Expiring certificates get a red number on the menu item.</dd></div>
                     <div><dt>DNS</dt><dd>The DNS records behind every site: addresses, mail servers, name servers and text records.</dd></div>
                     <div><dt>Security</dt><dd>A report card per site for security headers like HSTS, CSP and clickjacking protection.</dd></div>
-                    <div><dt>Analytics</dt><dd>Uptime, average response time and number of checks for 24 hours, 7 days or 30 days, with a chart and a table of sites, worst first.</dd></div>
-                    <div><dt>Incidents</dt><dd>Every outage with the site, when it started, how long it lasted and whether it is resolved. The red number on the menu item is how many sites are down right now.</dd></div>
+                    <div><dt>Analytics</dt><dd>Uptime, average response time and number of checks for 24 hours, 7 days or 30 days.</dd></div>
+                    <div><dt>Incidents</dt><dd>Every outage with the site, when it started, how long it lasted and whether it is resolved.</dd></div>
                     <div><dt>Server</dt><dd>Health of the machine running this dashboard: memory, disk, load, uptime and the check engine itself.</dd></div>
                 </dl>
 
@@ -106,10 +97,7 @@
                     <li><i class="k-warn"></i>Uptime between 99% and 99.9% needs a look.</li>
                     <li><i class="k-bad"></i>Uptime below 99% is a problem.</li>
                 </ul>
-                <p>Response times in the charts are capped at 5 seconds, so one very slow check does not flatten the rest of the graph.</p>
-
-                <h3>Where the data comes from</h3>
-                <p>The sites come from the Plesk server, and a few internal domains are hidden on purpose. Results are refreshed about once a minute, so many people can watch at the same time without overloading the sites. The small graphs on the Live page cover the last 8 hours. Analytics and Incidents keep 30 days of history. Checks are stored while someone has the Live page open, so leave it running on a screen for the best charts. Deep information (certificates, DNS, headers) is refreshed in small batches every few hours — use the Rescan button on those pages to push the queue.</p>
+                <p>Response times in the charts are capped at 5 seconds. Deep information (certificates, DNS, headers) is refreshed in small batches every few hours so the monitored sites are never overloaded — use the Rescan button on those pages to push the queue.</p>
             </div>
         </section>
         <section id="view-live" class="view"><div id="card-container"></div></section>
@@ -130,4 +118,4 @@
     <script src="analytics.js"></script>
     <script src="tabs.js"></script>
 </body>
-</html>
+</html> 

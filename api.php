@@ -1,4 +1,6 @@
 <?php
+   require __DIR__ . '/auth.php';
+   require_login(true); // returns 401 JSON instead of redirecting
 /* =========================================================
    WEBSITE HEALTH — api.php
    Live checks + Analytics + Inventory / SSL / DNS / Security

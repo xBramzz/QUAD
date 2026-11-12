@@ -1,3 +1,16 @@
+# Block direct access to config and data files
+<FilesMatch "^(config(\.sample)?\.php|\.gitignore)$">
+    Require all denied
+</FilesMatch>
+<FilesMatch "\.(json|log|bak|md)$">
+    Require all denied
+</FilesMatch>
 <FilesMatch "\.(sqlite|sqlite-wal|sqlite-shm|sqlite-journal|json|txt)$">
     Require all denied
 </FilesMatch>
+
+# Never serve .git
+RedirectMatch 404 /\.git
+
+# Hide PHP version / errors in production
+php_flag display_errors off
