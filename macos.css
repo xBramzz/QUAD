@@ -1,0 +1,179 @@
+/* =========================================================
+   WEBSITE HEALTH — macos.css
+   macOS look & feel layer. Load it LAST (after tabs.css).
+   Delete the <link> to go back to the old look.
+   Pi-friendly: no new blur layers, only transform/opacity motion.
+   ========================================================= */
+
+/* ---------- 1. TOKENS: macOS system colors (light) ---------- */
+:root {
+  --font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Inter', system-ui, sans-serif;
+
+  --accent: #007aff;
+  --accent-ring: rgba(0, 122, 255, 0.45);
+
+  --bg-primary:   #ececf1;
+  --bg-secondary: #f6f6f9;
+  --bg-soft:      #e4e4ea;
+
+  --text-primary:   #1d1d1f;
+  --text-secondary: #515154;
+  --text-muted:     #86868b;
+
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --status-grey:   #d1d1d6;
+
+  --green:  #d9f7e2; --green-text:  #1d8a3b; --green-ring:  rgba(48, 209, 88, 0.45);
+  --blue:   #d6e8ff; --blue-text:   #0066d6; --blue-ring:   rgba(0, 122, 255, 0.40);
+  --orange: #ff9f0a; --orange-text: #b25000; --orange-ring: rgba(255, 159, 10, 0.45);
+  --red:    #ffe0de; --red-text:    #d70015; --red-ring:    rgba(255, 69, 58, 0.45);
+  --purple: #ece3fb; --purple-text: #7d3bd6; --purple-ring: rgba(175, 82, 222, 0.40);
+
+  --radius-sm: 8px;
+  --radius-md: 16px;
+
+  --ease-out: cubic-bezier(0.32, 0.72, 0, 1);      /* macOS sheet curve  */
+  --spring:   cubic-bezier(0.34, 1.56, 0.64, 1);   /* small springy pops */
+  --focus-ring: 0 0 0 3px var(--accent-ring);
+
+  --glass-bg:     rgba(255, 255, 255, 0.72);
+  --glass-bg-2:   rgba(255, 255, 255, 0.50);
+  --glass-bar:    rgba(246, 246, 249, 0.88);
+  --glass-brd:    rgba(0, 0, 0, 0.08);
+  --glass-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.08);
+  --glass-hi:     inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --glow-a: rgba(0, 122, 255, 0.12);
+  --glow-b: rgba(175, 82, 222, 0.10);
+  --seg-on: #ffffff;
+}
+
+/* ---------- 1b. TOKENS: macOS dark ---------- */
+.dark-mode {
+  --accent: #0a84ff;
+  --accent-ring: rgba(10, 132, 255, 0.55);
+
+  --bg-primary:   #161618;
+  --bg-secondary: #232326;
+  --bg-soft:      #2c2c30;
+
+  --text-primary:   #f5f5f7;
+  --text-secondary: #a1a1a6;
+  --text-muted:     #8e8e93;
+
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --status-grey:   #3a3a3e;
+
+  --green:  #12301b; --green-text:  #32d74b; --green-ring:  rgba(48, 209, 88, 0.40);
+  --blue:   #0f2744; --blue-text:   #64a8ff; --blue-ring:   rgba(10, 132, 255, 0.50);
+  --orange: #ff9f0a; --orange-text: #ffb340; --orange-ring: rgba(255, 159, 10, 0.50);
+  --red:    #3a1614; --red-text:    #ff6961; --red-ring:    rgba(255, 69, 58, 0.50);
+  --purple: #2a1f45; --purple-text: #bf8cff; --purple-ring: rgba(175, 82, 222, 0.50);
+
+  --glass-bg:     rgba(255, 255, 255, 0.06);
+  --glass-bg-2:   rgba(0, 0, 0, 0.25);
+  --glass-bar:    rgba(28, 28, 30, 0.80);
+  --glass-brd:    rgba(255, 255, 255, 0.09);
+  --glass-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px rgba(0, 0, 0, 0.35);
+  --glass-hi:     inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  --glow-a: rgba(10, 132, 255, 0.22);
+  --glow-b: rgba(191, 90, 242, 0.14);
+  --seg-on: rgba(255, 255, 255, 0.16);
+}
+
+/* ---------- 2. TYPOGRAPHY ---------- */
+body { letter-spacing: -0.011em; }
+h1, h2, h3, .view-head h2 { letter-spacing: -0.022em; }
+.dateTime { font-family: var(--font-family); font-weight: 600; font-size: 0.98rem; letter-spacing: -0.01em; }
+:focus-visible { box-shadow: var(--focus-ring); }
+
+/* ---------- 3. HEADER = title bar ---------- */
+.Qteco { box-shadow: none; border-bottom: 1px solid var(--glass-brd); }
+.health-pill { height: 32px; padding: 0 14px; font-weight: 600; }
+
+/* ---------- 4. SIDEBAR: keep your design, add Mac details ---------- */
+#sidebar { width: 244px; padding: 52px 12px 16px; border-radius: 0 22px 22px 0; transition: transform 0.5s var(--ease-out) 0.25s, opacity 0.25s ease 0.25s; }
+#edge:hover + #sidebar, #sidebar:hover, #sidebar:focus-within { transition-delay: 0s; }
+#sidebar .brand { padding: 2px 12px 18px; }
+#sidebar a { padding: 9px 12px; border-radius: 10px; font-size: 0.88rem; font-weight: 500; letter-spacing: -0.01em; }
+#sidebar .ico { stroke-width: 1.75; transition: transform 0.25s var(--spring); }
+#sidebar a:hover .ico { transform: scale(1.18); }          /* Dock-style pop */
+#sidebar a.active { color: #fff; background: linear-gradient(90deg, rgba(10,132,255,0.55), rgba(10,132,255,0.18)); }
+#sidebar a.active::before { background: #64a8ff; }
+/* Traffic lights (decorative). Delete this block if you don't want them. */
+#sidebar::before {
+  content: ''; position: absolute; top: 18px; left: 20px; width: 12px; height: 12px; border-radius: 50%;
+  background: #ff5f57; box-shadow: 20px 0 0 #febc2e, 40px 0 0 #28c840;
+}
+
+/* ---------- 5. CARDS & PANELS: softer, rounder ---------- */
+.card, .tile, .panel { border-radius: var(--radius-md); }
+.card { transition: transform 0.35s var(--spring), box-shadow 0.25s ease, border-color 0.25s ease; }
+.card:hover { transform: translateY(-3px); }
+.chart-area { border-radius: 10px; }
+.status-badge { padding: 2px 9px; font-weight: 600; }
+.tile b { font-weight: 700; }
+
+/* ---------- 6. BUTTONS / SELECTS / SEGMENTED ---------- */
+.icon-btn, #status-filter, #theme-select { height: 36px; border-radius: 10px; font-weight: 500; }
+.icon-btn { transition: transform 0.25s var(--spring), background 0.2s, border-color 0.2s, box-shadow 0.2s, filter 0.2s; }
+.icon-btn:hover { transform: translateY(-1px); }
+.icon-btn:active { transform: scale(0.96); }
+.seg { padding: 2px; border-radius: 10px; }
+.seg button { border-radius: 8px; font-weight: 500; }
+.seg button.on { background: var(--seg-on); color: var(--text-primary); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22); }
+.search, .tab-search { border-radius: 10px; }
+.search:focus, .tab-search:focus { outline: none; border-color: var(--accent); box-shadow: var(--focus-ring); }
+
+/* ---------- 7. TABLES ---------- */
+.data th { font-weight: 500; font-size: 0.75rem; }
+.trow:hover { background: var(--glass-bg); }
+
+/* ---------- 8. TOASTS = notification banners ---------- */
+.toast { border-radius: 14px; padding: 9px 14px; font-size: 0.75rem; font-weight: 500; }
+
+/* ---------- 9. DRAWER = macOS sheet ---------- */
+.drawer { border-radius: 18px 0 0 18px; transition: transform 0.45s var(--ease-out); }
+.drawer-overlay { transition: opacity 0.3s ease; }
+
+/* ---------- 10. SCROLLBARS: neutral overlay style ---------- */
+.view-scroll, .drawer-body { scrollbar-color: rgba(128, 128, 128, 0.45) transparent; }
+.view-scroll::-webkit-scrollbar-thumb, .drawer-body::-webkit-scrollbar-thumb,
+.table-wrap::-webkit-scrollbar-thumb { background: rgba(128, 128, 128, 0.45); border-radius: 8px; }
+.view-scroll::-webkit-scrollbar-thumb:hover { background: rgba(128, 128, 128, 0.7); }
+
+/* ---------- 11. ABOUT page uses the system accent ---------- */
+.home { --home-accent: var(--accent); --home-accent-soft: rgba(10, 132, 255, 0.16); }
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  #sidebar .ico, .card, .icon-btn, .drawer { transition: none !important; }
+  #sidebar a:hover .ico, .card:hover, .icon-btn:hover { transform: none; }
+}
+/* In Section 3. HEADER = title bar */
+.Qteco { 
+  box-shadow: none; 
+  border-bottom: 1px solid var(--glass-brd); 
+  display: flex;
+  align-items: center;
+}
+
+/* Target the logo specifically - adjust padding-top until it looks right */
+.Qteco img, .Qteco svg, .brand-logo { 
+  margin-top: 2px; /* Pushes logo down slightly to match text baseline */
+  height: 28px;    /* Constrain height to match button/health-pill height */
+  width: auto;
+}
+
+/* Ensure time/date text is perfectly centered within its container */
+.dateTime, .date-display {
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+/* Add to Section 3 or 6 */
+.icon-btn, #status-filter, #theme-select, .health-pill { 
+  height: 36px; 
+  display: flex;
+  align-items: center;
+}
