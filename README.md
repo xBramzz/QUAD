@@ -11,6 +11,7 @@ A live dashboard that checks all your websites, shows how fast they respond, kee
 - **Incidents.** Every outage with its status code, start time and duration, and whether it is still ongoing. A red badge in the sidebar counts sites that are down right now.
 - **Always fullscreen.** The frosted-glass sidebar stays hidden. Move the cursor to the left edge of the screen and it slides in.
 - **Light and dark theme**, remembered per browser.
+- **Bubble FX.** Bubbles react to every action: typing (from the caret), deleting, clicking, hovering, scrolling, tab switches, toasts and theme changes. Floating bubbles can be popped with the cursor. Toggle with the bubble button bottom-right (`bubbles.js`, `bubbles.css`).
 - **Pi friendly.** Plain HTML, CSS and JavaScript with no frameworks. Animations only use transform and opacity, and are switched off when the system asks for reduced motion.
 
 ## Screenshots

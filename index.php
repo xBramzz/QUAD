@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="home.css" />
     <link rel="stylesheet" href="tabs.css" />
     <link rel="stylesheet" href="macos.css" />
+    <link rel="stylesheet" href="bubbles.css" />
 </head>
 <body>
     <div id="edge" aria-hidden="true"></div>
@@ -119,5 +120,6 @@
     <script src="app.js"></script>
     <script src="analytics.js"></script>
     <script src="tabs.js"></script>
+    <script src="bubbles.js"></script>
 </body>
 </html> 

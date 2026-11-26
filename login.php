@@ -147,6 +147,7 @@ $AVATAR = $first['avatar'] ?? 'assets/pfp.png';    // profile picture
   @keyframes shake { 20%,60% { transform: translateX(-8px); } 40%,80% { transform: translateX(8px); } }
   @media (prefers-reduced-motion: reduce) { .card, .card.shake { animation: none; } button { transition: none; } }
 </style>
+  <link rel="stylesheet" href="bubbles.css">
 </head>
 <body>
   <form class="card <?= $error && $locked === 0 ? 'shake' : '' ?>" method="post" autocomplete="on">
@@ -180,5 +181,6 @@ $AVATAR = $first['avatar'] ?? 'assets/pfp.png';    // profile picture
     <p class="error" role="alert"><?= $e($error) ?></p>
     <button type="submit" <?= $locked > 0 ? 'disabled' : '' ?>>Sign in</button>
   </form>
+  <script src="bubbles.js"></script>
 </body>
 </html>
